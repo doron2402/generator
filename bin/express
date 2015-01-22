@@ -23,6 +23,7 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .on('help', flushOutput)
   .parse(process.argv);
 
 // Path
@@ -263,6 +264,17 @@ function emptyDirectory(path, fn) {
 }
 
 /**
+ * Flush STDIO
+ */
+
+function flushOutput() {
+ try {
+    fs.fsyncSync(process.stdout.fd);
+    fs.fsyncSync(process.stderr.fd);
+  } catch (e) {}
+}
+
+/**
  * echo str > path.
  *
  * @param {String} path
@@ -297,5 +309,6 @@ function mkdir(path, fn) {
 
 function abort(str) {
   console.error(str);
+  flushOutput();
   process.exit(1);
 }
